@@ -1,3 +1,5 @@
+;; TODO change straight-use-package to use-package for syntactic sugar
+;; that straight.el does not use, why reinvent the wheel right?
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)			;disable visible scroll bar
 (tool-bar-mode -1)			; disable tool bar
@@ -11,7 +13,7 @@
 
 ;; (load-theme 'wombat)
 
-;; (setq straight-base-dir "~/.config/straight")
+;;(setq straight-base-dir "~/.config/straight")
 
 ;; function to make abbrevs out of bookmarks
 (defun bookmark-to-abbrevs ()
@@ -20,22 +22,6 @@
    (let* ((name (car bookmark))
           (file (bookmark-get-filename name)))
      (define-abbrev global-abbrev-table name file))))
-
-
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(setq straight-use-package-by-default t)
 
 
 (setq display-line-numbers-type 'visual)
@@ -51,7 +37,22 @@
 		ehsell-mode-hook))
   (add-hook mode 'disable-line-numbers-mode))
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(setq package-enable-at-startup nil)
 (straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
 (use-package counsel
   :bind (("C-s" . swiper)
@@ -78,8 +79,12 @@
   (ivy-mode 1))
 
 (straight-use-package 'spaceline)
-(require 'spaceline-config)
-(spaceline-emacs-theme)
+(use-package spaceline
+  :config
+  (spaceline-emacs-theme)
+  )
+;; (require 'spaceline-config)
+
 
 (use-package doom-themes
   :init (load-theme 'doom-wilmersdorf t))
@@ -114,25 +119,73 @@
   )
 (general-setq source-directory "c:/Program Files/Emacs/emacs-27.2")
 
-(use-package evil)
-(evil-mode 1)
-(use-package evil-escape)
-(evil-escape-mode 1)
+;; (straight-use-package
+;;  '(evil
+;;    :pre-build (
+;; 	       (general-setq evil-want-integration t)
+;; 	       (general-setq evil-want-keybinding nil)
+;; 	       (general-setq evil-wantC-u-scroll t)
+;; 	       )
+;;    :post-build (
+;; 		(message "post-build") 
+;; 		)
+;;    )
+;;  )
+
+(use-package evil
+  :defer t
+  :init
+  (general-setq evil-want-integration t)
+  (general-setq evil-want-keybinding nil)
+  (general-setq evil-want-C-u-scroll t)
+  :config
+  (evil-mode 1)
+  (general-setq evil-undo-system 'undo-redo)
+  )
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init)
+  )
+;; (straight-use-package
+;;  '(evil-escape
+;;    (evil-escape-mode 1)
+;;    ))
+
+(use-package evil-escape
+  :config
+  (evil-escape-mode 1)
+  )
+
+(use-package howm
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key Bindings		  	     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; (general-def
 ;;   :prefix "SPC"
 ;;   "" nil
 ;;   ";;" '(comment-line :which-key "comment line"))
 
 
+
 (general-create-definer jep/leader-keys
+  :keymaps '(normal insert emacs)
   :prefix "SPC"
-  :global-prefix "C-SPC"
+  :non-normal-prefix "C-SPC"
   )
 
 (jep/leader-keys
- "a" '(:whick-key "applications")
- "tt" '(counsel-load-them :which-key "choose theme"))
+  ;; prefix key setup
+  "f" '(:ignore t :wk "files")
+  "t" '(:ignore t :wk "toggles")
+  "a" '(:ignore t :wk "applications")
+  "w" '(:ignore t :wk "window")
+
+
+  "tt" '(counsel-load-theme :which-key "choose theme")
+  "ff" '(counsel-find-file :wk "find-file")
+  )
