@@ -54,27 +54,11 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+(use-package general
+  ;; (general-evil-setup t)
+  )
+
 (use-package counsel
-  :bind (("C-s" . swiper)
-	 ("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         ;; ("C-M-j" . counsel-switch-buffer)
-         ("C-M-l" . counsel-imenu)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)	
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
   :init
   (ivy-mode 1))
 
@@ -83,8 +67,6 @@
   :config
   (spaceline-emacs-theme)
   )
-;; (require 'spaceline-config)
-
 
 (use-package doom-themes
   :init (load-theme 'doom-wilmersdorf t))
@@ -99,8 +81,35 @@
   (setq which-key-idle-delay 0.3))
 
 (use-package ivy-rich
+  :general
+  (
+   "C-s" 'swiper
+   "M-x" 'counsel-M-x
+   "C-x b" 'counsel-ibuffer
+   "C-x C-f" 'counsel-find-file
+   "C-M-l" 'counsel-imenu
+   )
+  (:keymaps 'minibuffer-local-map
+	    "C-r" '(counsel-minibuffer-history)
+	    )
+  (:keymaps 'ivy-minibuffer-map
+	    "TAB" 'ivy-alt-done	
+	    "C-l" 'ivy-alt-done
+	    "C-j" 'ivy-next-line
+	    "C-k" 'ivy-previous-line
+	    )
+  (:keymaps 'ivy-switch-buffer-map
+	    "C-k" 'ivy-previous-line
+	    "C-l" 'ivy-done
+	    "C-d" 'ivy-switch-buffer-kill
+	    )
+  (:keymaps 'ivy-reverse-i-search-map
+	    "C-k" 'ivy-previous-line
+	    "C-d" 'ivy-reverse-i-search-kill
+	    )
   :init
-  (ivy-rich-mode))
+  (ivy-rich-mode)
+  )
 
 (use-package helpful
   :custom
@@ -114,9 +123,6 @@
   ([remap describe-key] . helpful-key)
   )
 
-(use-package general
-  ;; (general-evil-setup t)
-  )
 (general-setq source-directory "c:/Program Files/Emacs/emacs-27.2")
 
 ;; (straight-use-package
@@ -148,10 +154,6 @@
   :config
   (evil-collection-init)
   )
-;; (straight-use-package
-;;  '(evil-escape
-;;    (evil-escape-mode 1)
-;;    ))
 
 (use-package evil-escape
   :config
@@ -164,7 +166,8 @@
 (use-package hydra
   )
 
-(use-package ivy-hydra)
+(use-package ivy-hydra
+  )
 
 ;;;;;;;;;;;;;;;;;;
 ;; Hydra Macros ;;
@@ -183,46 +186,6 @@
 (defhydra hydra-buffer-nav (:timeout 4)
   "navigate buffers"
 )
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Key Bindings		  	     ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(general-def
-  "C-g" nil
-  "C-g" 'evil-escape)
-
-
-
-
-(general-create-definer jep/leader-keys
-  :keymaps '(normal insert emacs)
-  :prefix "SPC"
-  :non-normal-prefix "C-SPC"
-  )
-
-(jep/leader-keys
-  "TAB" '(spacemacs/alternate-buffer :wk "last buffer")
-
-  ;; prefix key setup
-  "f" '(:ignore t :wk "files")
-  "t" '(:ignore t :wk "toggles")
-  "a" '(:ignore t :wk "applications")
-  "w" '(:ignore t :wk "window")
-  "h" '(:ignore t :wk "help")
-
-  ;; HELP
-  "hdv" '(describe-variable :wk "describe variable")
-  "hdf" '(describe-function :wk "describe function")
-  "hdk" '(describe-key :wk "describe key")
-
-  "tt" '(counsel-load-theme :which-key "choose theme")
-  "ts" '(hydra-text-scale/body :wk "scale text")
-  "ff" '(counsel-find-file :wk "find-file")
-
-  )
-
 
 (defun spacemacs/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the
@@ -247,3 +210,78 @@ the current layouts buffers."
     (if (not buf)
         (message "Last buffer not found.")
       (set-window-buffer-start-and-point window buf start pos))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Key Bindings		  	     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(general-def
+  "C-g" 'evil-escape
+  )
+
+(general-create-definer jep/leader-keys
+  :keymaps '(normal insert emacs visual)
+  :prefix "SPC"
+  :non-normal-prefix "C-SPC"
+  )
+
+(jep/leader-keys
+  "TAB" '(spacemacs/alternate-buffer :wk "last buffer")
+
+  ;; prefix key setup
+  "f" '(:ignore t :wk "files")
+  "t" '(:ignore t :wk "toggles")
+  "a" '(:ignore t :wk "applications")
+  "w" '(:ignore t :wk "window")
+  "h" '(:ignore t :wk "help")
+  "b" '(:ignore t :wk "buffers")
+  ";" '(:ignore t :wk "comment")
+
+  )
+
+;; COMMENTS
+(jep/leader-keys
+  :infix ";"
+  ";" '(comment-dwim :wk)		
+  )					
+
+;; HELP
+(jep/leader-keys
+  :infix "h"
+  "d" '(:ignore t :wk "describe")
+  "dv" '(describe-variable :wk)
+  "df" '(describe-function :wk)
+  "dk" '(describe-key :wk)
+  "dg" '(general-describe-keybindings :wk)
+
+  )
+
+;; TOGGLES
+(jep/leader-keys
+  :infix "t"
+  "t" '(counsel-load-theme :which-key)
+  "s" '(hydra-text-scale/body :wk)
+  )
+
+;; FILES
+(jep/leader-keys
+  :infix "f"
+  "f" '(counsel-find-file :wk)
+  "s" '(save-buffer :wk)
+  )
+
+;; WINDOW
+(jep/leader-keys
+  :infix "w"
+  "d" '(:wk)
+
+  )
+
+;; SEARCH
+ 
+(jep/leader-keys
+  :infix "s"
+  "s" '(swiper :wk)
+
+
+  )
