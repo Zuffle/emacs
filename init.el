@@ -62,7 +62,9 @@
   :init
   (ivy-mode 1))
 
-(straight-use-package 'spaceline)
+(use-package diminish
+  )
+
 (use-package spaceline
   :config
   (spaceline-emacs-theme)
@@ -111,6 +113,9 @@
   (ivy-rich-mode)
   )
 
+(use-package ivy-hydra
+  )
+
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -124,19 +129,6 @@
   )
 
 (general-setq source-directory "c:/Program Files/Emacs/emacs-27.2")
-
-;; (straight-use-package
-;;  '(evil
-;;    :pre-build (
-;; 	       (general-setq evil-want-integration t)
-;; 	       (general-setq evil-want-keybinding nil)
-;; 	       (general-setq evil-wantC-u-scroll t)
-;; 	       )
-;;    :post-build (
-;; 		(message "post-build") 
-;; 		)
-;;    )
-;;  )
 
 (use-package evil
   :defer t
@@ -166,8 +158,39 @@
 (use-package hydra
   )
 
-(use-package ivy-hydra
+ ;; (defun dw/switch-project-action ()
+ ;;  "Switch to a workspace with the project name and start `magit-status'."
+ ;;  ;; TODO: Switch to EXWM workspace 1?
+ ;;  (persp-switch (projectile-project-name))
+ ;;  (magit-status))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom (projectile-completion-system 'ivy)
+  :demand t
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/projects/coding")
+    (setq projectile-project-search-path '("~/projects/coding")))
+  (setq projectile-switch-project-action #'dw/projectile-dired)
   )
+
+(use-package magit
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  )
+
+
+(use-package counsel-projectile
+  :after projectile
+  :bind (("C-M-p" . counsel-projectile-find-file))
+  :config
+  (counsel-projectile-mode)
+  )
+
+ 
 
 ;;;;;;;;;;;;;;;;;;
 ;; Hydra Macros ;;
@@ -236,6 +259,8 @@ the current layouts buffers."
   "h" '(:ignore t :wk "help")
   "b" '(:ignore t :wk "buffers")
   ";" '(:ignore t :wk "comment")
+  "p" '(projectile-command-map :wk "projectile")
+  "g" '(:ignore t :which-key "git")
 
   )
 
@@ -274,7 +299,6 @@ the current layouts buffers."
 (jep/leader-keys
   :infix "w"
   "d" '(:wk)
-
   )
 
 ;; SEARCH
@@ -285,3 +309,30 @@ the current layouts buffers."
 
 
   )
+
+;; PROJECT
+;; (jep/leader-keys
+;;   :infix "p"
+;;   "f"  'counsel-projectile-find-file
+;;   "s"  'counsel-projectile-switch-project
+;;   "F"  'counsel-projectile-rg
+;;   ;; "pF"  'consult-ripgrep
+;;   "p"  'counsel-projectile
+;;   "c"  'projectile-compile-project
+;;   "d"  'projectile-dired)
+
+;; GIT
+(jep/leader-keys
+  :infix "g"
+  "s"  'magit-status
+  "d"  'magit-diff-unstaged
+  "c"  'magit-branch-or-checkout
+  "l"   '(:ignore t :which-key "log")
+  "lc" 'magit-log-current
+  "lf" 'magit-log-buffer-file
+  "b"  'magit-branch
+  "P"  'magit-push-current
+  "p"  'magit-pull-branch
+  "f"  'magit-fetch
+  "F"  'magit-fetch-all
+  "r"  'magit-rebase)
