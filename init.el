@@ -264,10 +264,18 @@ the current layouts buffers."
 
   )
 
+;; BUFFERS
+(jep/leader-keys
+  :infix "b"
+  "k" '(kill-current-buffer :wk)
+  "b" '(counsel-switch-buffer :wk)
+  "c" '(clean-buffer-list :wk)
+  )
+
 ;; COMMENTS
 (jep/leader-keys
   :infix ";"
-  ";" '(comment-dwim :wk)		
+  ";" '(comment-line :wk)		
   )					
 
 ;; HELP
