@@ -7,9 +7,11 @@
 (set-fringe-mode -1)			;give breathing room ?
 
 (menu-bar-mode -1)			; disable menu bar
-(setq visual-bell t)			; change audio bells to visual
+
 
 (set-face-attribute 'default nil :family "Fira Code")
+
+(prefer-coding-system 'utf-8-unix)
 
 ;; (load-theme 'wombat)
 
@@ -57,7 +59,7 @@
 (use-package general
   ;; (general-evil-setup t)
   )
-
+(general-setq visible-bell t)			; change audio bells to visual
 (use-package counsel
   :init
   (ivy-mode 1))
@@ -130,6 +132,11 @@
 
 (general-setq source-directory "c:/Program Files/Emacs/emacs-27.2")
 
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode 1)
+  )
+
 (use-package evil
   :defer t
   :init
@@ -138,7 +145,7 @@
   (general-setq evil-want-C-u-scroll t)
   :config
   (evil-mode 1)
-  (general-setq evil-undo-system 'undo-redo)
+  (general-setq evil-undo-system 'undo-tree)
   )
 
 (use-package evil-collection
@@ -242,6 +249,12 @@ the current layouts buffers."
   "C-g" 'evil-escape
   )
 
+;; unbind C-h in howm-menu-mode-map
+(general-def
+  :keymaps '(howm-menu-mode-map)
+  "C-h" nil
+  )
+
 (general-create-definer jep/leader-keys
   :keymaps '(normal insert emacs visual)
   :prefix "SPC"
@@ -286,6 +299,8 @@ the current layouts buffers."
   "df" '(describe-function :wk)
   "dk" '(describe-key :wk)
   "dg" '(general-describe-keybindings :wk)
+  "dm" '(describe-mode :wk)
+  
 
   )
 
