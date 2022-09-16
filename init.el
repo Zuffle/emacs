@@ -75,6 +75,7 @@
 (use-package doom-themes
   :init (load-theme 'doom-wilmersdorf t))
 
+(use-package vterm)
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -97,7 +98,6 @@
 	    "C-r" '(counsel-minibuffer-history)
 	    )
   (:keymaps 'ivy-minibuffer-map
-	    "TAB" 'ivy-alt-done	
 	    "C-l" 'ivy-alt-done
 	    "C-j" 'ivy-next-line
 	    "C-k" 'ivy-previous-line
@@ -255,6 +255,7 @@ the current layouts buffers."
   "C-h" nil
   )
 
+;; rebind some counsel/ivy bindings
 (general-create-definer jep/leader-keys
   :keymaps '(normal insert emacs visual)
   :prefix "SPC"
