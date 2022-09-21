@@ -13,7 +13,7 @@
 
 (prefer-coding-system 'utf-8-unix)
 
-;; (load-theme 'wombat)
+(load-theme 'tsdh-dark)
 
 ;;(setq straight-base-dir "~/.config/straight")
 
@@ -59,7 +59,9 @@
 (use-package general
   ;; (general-evil-setup t)
   )
+
 (general-setq visible-bell t)			; change audio bells to visual
+
 (use-package counsel
   :init
   (ivy-mode 1))
@@ -73,7 +75,8 @@
   )
 
 (use-package doom-themes
-  :init (load-theme 'doom-wilmersdorf t))
+  ;; :init (load-theme 'doom-wilmersdorf t)
+)
 
 (use-package vterm)
 (use-package rainbow-delimiters
