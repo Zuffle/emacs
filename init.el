@@ -77,7 +77,7 @@
   ;; :init (load-theme 'doom-wilmersdorf t)
 )
 
-(use-package vterm)
+;; (use-package vterm)
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
