@@ -8,7 +8,6 @@
 
 (menu-bar-mode -1)			; disable menu bar
 
-;; hi
 (set-face-attribute 'default nil :family "Fira Mono")
 
 (prefer-coding-system 'utf-8-unix)
