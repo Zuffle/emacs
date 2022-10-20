@@ -8,9 +8,15 @@
 
 (menu-bar-mode -1)			; disable menu bar
 
+
 (set-face-attribute 'default nil :family "Fira Mono")
 
-(prefer-coding-system 'utf-8-unix)
+;; UTF-8 support
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)    
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 (load-theme 'tsdh-dark)
 
@@ -31,6 +37,13 @@
     "A function to add to mode hooks to prevent line numbers"
     (display-line-numbers-mode 0))
   
+;; evil emacs state mode hook
+(defun jep/evil-emacs-state-hook ()
+  (dolist (mode '(eshell-mode
+		  HM
+		  howm-menu-mode
+		  ))
+    (add-to-list 'evil-emacs-state-modes mode)))
 
 ; Disable line numbers for modes in list
 (dolist (mode '(term-mode-hook
@@ -59,6 +72,12 @@
   ;; (general-evil-setup t)
   )
 
+;(use-package unicode-fonts
+;  :config
+;  (unicode-fonts-setup)
+;)
+
+
 (general-setq visible-bell t)			; change audio bells to visual
 
 (use-package counsel
@@ -85,7 +104,9 @@
   :init (which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.3))
+  (setq which-key-idle-delay 0.3)
+  ;; (general-setq which-key-separator " -> ")
+  )
 
 (use-package ivy-rich
   :general
