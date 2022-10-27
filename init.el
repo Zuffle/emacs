@@ -8,6 +8,10 @@
 
 (menu-bar-mode -1)			; disable menu bar
 
+(defun my-move-key (keymap-from keymap-to key)
+     "Moves key binding from one keymap to another, deleting from the old location. "
+     (define-key keymap-to key (lookup-key keymap-from key))
+     (define-key keymap-from key nil))
 
 (set-face-attribute 'default nil :family "Fira Mono")
 
@@ -69,7 +73,8 @@
 (setq straight-use-package-by-default t)
 
 (use-package general
-  ;; (general-evil-setup t)
+  :config
+  (general-evil-setup t)
   )
 
 ;(use-package unicode-fonts
@@ -169,6 +174,12 @@
   :config
   (evil-mode 1)
   (general-setq evil-undo-system 'undo-tree)
+   (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
+   ;; (my-move-key evil-motion-state-map evil-normal-state-map " ") 
+   (general-unbind 'motion
+     "SPC"
+     )
+   
   )
 
 (use-package evil-collection
@@ -221,6 +232,12 @@
   )
 
  
+;; (use-package helm
+;;   :config
+;;   (helm-mode 1)
+;;   )
+
+(use-package smex)
 
 ;;;;;;;;;;;;;;;;;;
 ;; Hydra Macros ;;
@@ -268,6 +285,7 @@ the current layouts buffers."
 ;; Key Bindings		  	     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; use hooks to change evil bindings local
 (general-def
   "C-g" 'evil-escape
   )
@@ -283,6 +301,7 @@ the current layouts buffers."
   :keymaps '(normal insert emacs visual)
   :prefix "SPC"
   :non-normal-prefix "C-SPC"
+  "SPC" nil
   )
 
 (jep/leader-keys
@@ -353,8 +372,6 @@ the current layouts buffers."
 (jep/leader-keys
   :infix "s"
   "s" '(swiper :wk)
-
-
   )
 
 ;; PROJECT
