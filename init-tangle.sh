@@ -1,4 +1,5 @@
-#!emacs --script
+#!/bin/sh
+":"; exec emacs --quick --script "$0" "$@" # -*- mode: emacs-lisp; lexical-binding: t; -*-
 (require 'org)
 ;; (require 'org-babel)
 
