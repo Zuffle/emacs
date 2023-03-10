@@ -4,6 +4,6 @@
 
 (let ((config-file "~/.config/emacs-config/litfig.org")
       )
-  (princ (format "Tangling file %s." config-file))
+  (princ (format "Tangling file %s.\n" config-file))
   (org-babel-tangle-file config-file)
   )
