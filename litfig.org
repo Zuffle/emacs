@@ -28,7 +28,14 @@ Straight setup is necessary near the beginning for *customization* purposes
 (setq straight-use-package-by-default t)
 #+end_src
 
-a
+early-init.el for straight
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
+(setq package-enable-at-startup nil)	; from straight.el to avoid
+                                        ; pacakge.el loading packages
+                                        ; prior to init.el
+
+#+end_src
+
 ** General.el
 I am using general.el for key bindings and notably for ~general-setq~ for defcustom variable setting.
 
