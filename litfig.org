@@ -75,72 +75,64 @@ This also includes hook-functions I think
 #+begin_src emacs-lisp
 
 (defun bookmark-to-abbrevs ()
-   "Create abbrevs based on `bookmark-alist'."
-   (dolist (bookmark bookmark-alist)
-   (let* ((name (car bookmark))
-          (file (bookmark-get-filename name)))
-     (define-abbrev global-abbrev-table name file))))
+  "Create abbrevs based on `bookmark-alist'."
+  (dolist (bookmark bookmark-alist)
+    (let* ((name (car bookmark))
+	   (file (bookmark-get-filename name)))
+      (define-abbrev global-abbrev-table name file))))
 
 (defun my-move-key (keymap-from keymap-to key)
-     "Moves key binding from one keymap to another, deleting from the old location. "
-     (define-key keymap-to key (lookup-key keymap-from key))
-     (define-key keymap-from key nil))
+  "Moves key binding from one keymap to another, deleting from the old location. "
+  (define-key keymap-to key (lookup-key keymap-from key))
+  (define-key keymap-from key nil))
 
 (defun disable-line-numbers-mode ()
-    "A function to add to mode hooks to prevent line numbers"
-    (display-line-numbers-mode 0))
+  "A function to add to mode hooks to prevent line numbers"
+  (display-line-numbers-mode 0))
 
-;; evil emacs state mode hook
-(defun jep/evil-emacs-state-hook ()
-  (dolist (mode '(eshell-mode
-		  HM
-		  howm-menu-mode
-		  ))
-    (add-to-list 'evil-emacs-state-modes mode)))
-
-; Disable line numbers for modes in list
+;;  Disable line numbers for modes in list
 (dolist (mode '(term-mode-hook
 		shell-mode-hook
 		ehsell-mode-hook))
   (add-hook mode 'disable-line-numbers-mode))
 
- ;; (defun dw/switch-project-action ()
- ;;  "Switch to a workspace with the project name and start `magit-status'."
- ;;  ;; TODO: Switch to EXWM workspace 1?
- ;;  (persp-switch (projectile-project-name))
- ;;  (magit-status))
+;; (defun dw/switch-project-action ()
+;;  "Switch to a workspace with the project name and start `magit-status'."
+;;  ;; TODO: Switch to EXWM workspace 1?
+;;  (persp-switch (projectile-project-name))
+;;  (magit-status))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
-  (general-setq evil-auto-indent nil)
+  ;; (general-setq evil-auto-indent nil)
   )
 
 
 (defun spacemacs/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the
-current window.
-If `spacemacs-layouts-restrict-spc-tab' is `t' then this only switches between
-the current layouts buffers."
+  current window.
+  If `spacemacs-layouts-restrict-spc-tab' is `t' then this only switches between
+  the current layouts buffers."
   (interactive)
   (cl-destructuring-bind (buf start pos)
       (if (bound-and-true-p spacemacs-layouts-restrict-spc-tab)
-          (let ((buffer-list (persp-buffer-list))
-                (my-buffer (window-buffer window)))
-            ;; find buffer of the same persp in window
-            (seq-find (lambda (it) ;; predicate
-                        (and (not (eq (car it) my-buffer))
-                             (member (car it) buffer-list)))
-                      (window-prev-buffers)
-                      ;; default if found none
-                      (list nil nil nil)))
-        (or (cl-find (window-buffer window) (window-prev-buffers)
-                     :key #'car :test-not #'eq)
-            (list (other-buffer) nil nil)))
+	  (let ((buffer-list (persp-buffer-list))
+		(my-buffer (window-buffer window)))
+	    ;; find buffer of the same persp in window
+	    (seq-find (lambda (it) ;; predicate
+			(and (not (eq (car it) my-buffer))
+			     (member (car it) buffer-list)))
+		      (window-prev-buffers)
+		      ;; default if found none
+		      (list nil nil nil)))
+	(or (cl-find (window-buffer window) (window-prev-buffers)
+		     :key #'car :test-not #'eq)
+	    (list (other-buffer) nil nil)))
     (if (not buf)
-        (message "Last buffer not found.")
+	(message "Last buffer not found.")
       (set-window-buffer-start-and-point window buf start pos))))
 #+end_src
 
@@ -279,15 +271,23 @@ Emacs vim emulation layer!
   (general-setq evil-want-integration t)
   (general-setq evil-want-keybinding nil)
   (general-setq evil-want-C-u-scroll t)
+  (general-setq evil-want-C-w-in-emacs-state t)
+  (general-setq evil-want-Y-yank-to-eol t)
   :config
   (evil-mode 1)
   (general-setq evil-undo-system 'undo-tree)
-   (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
-   ;; (my-move-key evil-motion-state-map evil-normal-state-map " ") 
-   (general-unbind 'motion
-     "SPC"
-     )
-   
+  (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
+  ;; (my-move-key evil-motion-state-map evil-normal-state-map " ") 
+  (general-unbind 'motion
+    "SPC"
+    )
+  
+;;  evil emacs state mode hook
+  (dolist (mode '(
+                eshell-mode		
+		howm-menu-mode
+		))
+    (add-to-list 'evil-emacs-state-modes mode))
   )
 
 #+end_src
@@ -311,6 +311,21 @@ can use a key sequence to get back into normal mode
 (use-package evil-escape
   :config
   (evil-escape-mode 1)
+  :custom
+  (evil-escape-excluded-states '(emacs))
+  )
+
+#+end_src
+
+*** Evil surround
+changes 's' binding in normal mode to "surround" which is a command that
+takes a character as argument and will surround the selection with it
+
+
+#+begin_src emacs-lisp
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1)
   )
 
 #+end_src
@@ -555,7 +570,7 @@ This package will color matching delimiters for distinguishing things like paren
 #+end_src
 
 ** Smex
-This is used with Counsel fopr M-x to have recently used commands at the top of the list
+This is used with Counsel for M-x to have recently used commands at the top of the list
 
 #+begin_src emacs-lisp
 (use-package smex)
@@ -573,10 +588,13 @@ A package that copies Spacemacs' unique modeline
 
 ** undo-tree
 Quick way to enable undoing with Evil mode.
+
 #+begin_src emacs-lisp
 (use-package undo-tree
   :config
   (global-undo-tree-mode 1)
+  (defvar undo-dir (concat user-emacs-directory "undo/"))
+  (general-setq undo-tree-history-directory-alist `(("." . ,undo-dir)))
   )
 
 #+end_src
