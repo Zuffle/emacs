@@ -137,6 +137,7 @@ This also includes hook-functions I think
 #+end_src
 
 * UI
+
 ** General
 #+begin_src emacs-lisp
 
@@ -158,6 +159,7 @@ This also includes hook-functions I think
 (set-face-attribute 'default nil :family "Fira Mono")
 
 #+end_src
+
 ** Theme
 Still deciding on a theme
 #+begin_src emacs-lisp
@@ -165,6 +167,7 @@ Still deciding on a theme
 (load-theme 'tsdh-dark)
 
 #+end_src
+
 ** Gotta fix Unicode stuff here
 #+begin_src emacs-lisp
 
@@ -177,8 +180,8 @@ Still deciding on a theme
 (general-setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
 #+end_src
-* Packages
 
+* Packages
 
 ** Counsel
 Counsel-swiper-ivy for completion and searching buffers
@@ -262,32 +265,55 @@ Not sure what this is RN
 #+end_src
 
 ** Evil
-Emacs vim emulation layer! 
+Extensible vim emulation layer! 
 
+*** Hooks
+It seems like we need this add-to-list function for evil-emacs-state-modes to be in a hook otherwise it might not fire correctly
+#+begin_src emacs-lisp
+;;  evil emacs state mode hook
+(defun jsp/emacs-state-hook ()
+    (dolist (mode '(
+		    eshell-mode
+		    howm-menu-mode
+		    Info-mode
+		    ))
+      (dolist (state `(
+		       ,evil-emacs-state-modes
+		       ,evil-insert-state-modes
+		       ,evil-normal-state-modes
+		       ,evil-motion-state-modes
+		       ))
+	(delete mode state))
+      (add-to-list 'evil-emacs-state-modes mode))
+)
+
+#+end_src
+
+*** Install
 #+begin_src emacs-lisp
 (use-package evil
-  :defer t
+  ;; :defer t
   :init
   (general-setq evil-want-integration t)
   (general-setq evil-want-keybinding nil)
   (general-setq evil-want-C-u-scroll t)
   (general-setq evil-want-C-w-in-emacs-state t)
   (general-setq evil-want-Y-yank-to-eol t)
+  (general-setq evil-want-C-i-jump nil)
+  ;; (general-setq evil-default-state 'emacs)
+  :hook
+  (evil-mode . jsp/emacs-state-hook)
+  (howm-menu . evil-initialize)
+
   :config
-  (evil-mode 1)
+  (evil-mode  1)
   (general-setq evil-undo-system 'undo-tree)
-  (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
+  ;; (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
   ;; (my-move-key evil-motion-state-map evil-normal-state-map " ") 
   (general-unbind 'motion
     "SPC"
     )
   
-;;  evil emacs state mode hook
-  (dolist (mode '(
-                eshell-mode		
-		howm-menu-mode
-		))
-    (add-to-list 'evil-emacs-state-modes mode))
   )
 
 #+end_src
@@ -295,12 +321,25 @@ Emacs vim emulation layer!
 *** Evil collection
 A set of package to further integrate evil into emacs
 
+*** Hooks
 #+begin_src emacs-lisp
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init)
-  )
+(defun jsp/remove-from-evil-collection-list ()
+      (dolist (mode `(
+		      info
+		       ))
+	(delete mode evil-collection-mode-list))
+      )
+#+end_src
+*** Install
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after evil
+    ;; :hook
+    ;; (evil-collection jsp/remove-from-evil-collection-list)
+    :config
+    (jsp/remove-from-evil-collection-list)
+    (evil-collection-init)
+    )
 
 #+end_src
 
@@ -318,7 +357,7 @@ can use a key sequence to get back into normal mode
 #+end_src
 
 *** Evil surround
-changes 's' binding in normal mode to "surround" which is a command that
+add "s" bindings to normal mode to "surround" which is a command that
 takes a character as argument and will surround the selection with it
 
 
@@ -350,8 +389,22 @@ Package that revamps Emacs builtin help commands
 ** Howm
 A note taking mode for emacs designed around quick note taking and creating a personal wiki
 
+*** Hooks
+Howm is stubborn or Evil is stubborn so I need to make sure Evil is disabled for howm
+
 #+begin_src emacs-lisp
+  
+#+end_src
+
+*** install
+#+begin_src emacs-lisp
+
 (use-package howm
+  ;; :init
+  ;; :hook
+  ;; (howm-menu . evil-emacs-state)
+  ;; ;; :config
+  ;; (turn-off-evil-mode)
   )
 
 #+end_src
@@ -377,12 +430,12 @@ Git integration into emacs. Very handy
 #+end_src
 
 ** Org
-
 #+begin_src emacs-lisp
 
 (use-package org
   :custom
-  (org-src-preserve-indentation t)
+  (org-src-preserve-indentation nil)
+  (org-edit-src-content-indentation 0)
   :config
   ;; efs 
   (general-setq org-ellipsis " ▾")
@@ -463,6 +516,7 @@ Git integration into emacs. Very handy
 ;; (efs/org-font-setup)
 
 #+end_src
+
 *** Unused from EFS
 #+begin_src emacs-lisp
 ;; Configure custom agenda views
@@ -595,6 +649,7 @@ Quick way to enable undoing with Evil mode.
   (global-undo-tree-mode 1)
   (defvar undo-dir (concat user-emacs-directory "undo/"))
   (general-setq undo-tree-history-directory-alist `(("." . ,undo-dir)))
+  (general-setq undo-tree-auto-save-history nil)
   )
 
 #+end_src
