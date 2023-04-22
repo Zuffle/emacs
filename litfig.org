@@ -389,14 +389,9 @@ Package that revamps Emacs builtin help commands
 ** Howm
 A note taking mode for emacs designed around quick note taking and creating a personal wiki
 
-*** Hooks
-Howm is stubborn or Evil is stubborn so I need to make sure Evil is disabled for howm
+Howm is not really stubborn, it just activates howm-menu-mode in an unanticipated way.
+That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which is called when typing the C-c ,-, keybinding
 
-#+begin_src emacs-lisp
-  
-#+end_src
-
-*** install
 #+begin_src emacs-lisp
 
 (use-package howm
