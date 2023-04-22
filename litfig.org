@@ -93,7 +93,7 @@ This also includes hook-functions I think
 ;;  Disable line numbers for modes in list
 (dolist (mode '(term-mode-hook
 		shell-mode-hook
-		ehsell-mode-hook))
+		eshell-mode-hook))
   (add-hook mode 'disable-line-numbers-mode))
 
 ;; (defun dw/switch-project-action ()
