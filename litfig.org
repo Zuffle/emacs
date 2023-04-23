@@ -427,15 +427,27 @@ Git integration into emacs. Very handy
 
 ** Org
 You know that Org mode is 
+
 #+begin_src emacs-lisp
 
 (use-package org
   :custom
   (org-src-preserve-indentation nil)
   (org-edit-src-content-indentation 0)
-  ;; shortcut to enter structure templates
-  (org-modules (append org-modules '(org-tempo)))
   :config
+  ;; customize vars with gsetq
+  ;; shortcut to enter structure templates org-tempo
+  (gsetq org-modules (append org-modules '(org-tempo)))
+  (dolist (template '(
+		      ("el" . "src emacs-lisp")
+		      ("py" . "src python")
+		      ("c" . "src C")
+		      ("cpp" . "src C++")
+		      ("center" . "center")
+		      ))
+    (when (assoc (car template) org-structure-template-alist)
+       (assoc-delete-all (car template) org-structure-template-alist))
+     (add-to-list 'org-structure-template-alist template t))
   ;; efs 
   (general-setq org-ellipsis " ▾")
 
