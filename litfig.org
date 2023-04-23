@@ -23,9 +23,7 @@ Straight setup is necessary near the beginning for *customization* purposes
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq package-enable-at-startup nil)
 (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
 #+end_src
 
 early-init.el for straight
@@ -34,6 +32,15 @@ early-init.el for straight
                                         ; pacakge.el loading packages
                                         ; prior to init.el
 
+#+end_src
+
+*** Configuration
+
+#+begin_src emacs-lisp
+(use-package straight
+  :custom
+  (straight-use-package-by-default t)
+  )
 #+end_src
 
 ** General.el
