@@ -119,6 +119,13 @@ This also includes hook-functions I think
   )
 
 
+#+end_src
+
+*** Spacemacs functions
+These are functions I am stealing from Spacemacs
+
+#+begin_src emacs-lisp
+
 (defun spacemacs/alternate-buffer (&optional window)
   "Switch back and forth between current and last buffer in the
   current window.
@@ -142,6 +149,75 @@ This also includes hook-functions I think
     (if (not buf)
 	(message "Last buffer not found.")
       (set-window-buffer-start-and-point window buf start pos))))
+
+;; restart-emacs
+
+(defun spacemacs/restart-emacs (&optional args)
+  "Restart emacs."
+  (interactive)
+  (setq spacemacs-really-kill-emacs t)
+  (restart-emacs args))
+
+(defun spacemacs/restart-emacs-resume-layouts (&optional args)
+  "Restart emacs and resume layouts."
+  (interactive)
+  (spacemacs/restart-emacs (cons "--resume-layouts" args)))
+
+(defun spacemacs/restart-emacs-debug-init (&optional args)
+  "Restart emacs and enable debug-init."
+  (interactive)
+  (spacemacs/restart-emacs (cons "--debug-init" args)))
+
+(defun spacemacs/restart-emacs-timed-requires (&optional args)
+  "Restart emacs and time loads / requires."
+  (interactive)
+  (spacemacs/restart-emacs (cons "--timed-requires" args)))
+
+(defun spacemacs/restart-emacs-adv-timers (&optional args)
+  "Restart emacs and time loads / requires and spacemacs configuration."
+  (interactive)
+  (spacemacs/restart-emacs (cons "--adv-timers" args)))
+
+(defun spacemacs/restart-stock-emacs-with-packages (packages &optional args)
+  "Restart emacs without the spacemacs configuration, enable
+debug-init and load the given list of packages."
+  (interactive
+   (progn
+     (unless package--initialized
+       (package-initialize t))
+     (let ((packages (append (mapcar 'car package-alist)
+                             (mapcar 'car package-archive-contents)
+                             (mapcar 'car package--builtins))))
+       (setq packages (mapcar 'symbol-name packages))
+       (let ((val (completing-read-multiple "Packages to load (comma separated): "
+                                            packages nil t)))
+         `(,val)))))
+  (let ((load-packages-string (mapconcat (lambda (pkg) (format "(use-package %s)" pkg))
+                                         packages " ")))
+    (spacemacs/restart-emacs-debug-init
+     (append (list "-q" "--execute"
+                   (concat "(progn (package-initialize) "
+                           "(require 'use-package)"
+                           load-packages-string ")"))
+             args))))
+
+(defun spacemacs/switch-to-scratch-buffer (&optional arg)
+  "Switch to the `*scratch*' buffer, creating it first if needed.
+if prefix argument ARG is given, switch to it in an other, possibly new window."
+  (interactive "P")
+  (let ((exists (get-buffer "*scratch*")))
+    (if arg
+        (switch-to-buffer-other-window (get-buffer-create "*scratch*"))
+      (switch-to-buffer (get-buffer-create "*scratch*")))
+    (when (not exists)
+      (add-hook 'kill-buffer-hook
+                #'spacemacs//confirm-kill-buffer
+                nil t)
+      (when (and (not (eq major-mode dotspacemacs-scratch-mode))
+                 (fboundp dotspacemacs-scratch-mode))
+        (funcall dotspacemacs-scratch-mode)
+        (run-hooks 'spacemacs-scratch-mode-hook)))))
+
 #+end_src
 
 * UI
@@ -641,6 +717,13 @@ This package will color matching delimiters for distinguishing things like paren
 
 #+end_src
 
+** Restart Emacs
+A useful package to restart emacs from within emacs (Spacemacs uses this)
+
+#+begin_src emacs-lisp
+(use-package restart-emacs
+  )
+#+end_src
 ** Smex
 This is used with Counsel for M-x to have recently used commands at the top of the list
 
@@ -735,6 +818,8 @@ I use multiple prefixes to branch into different key bindings chords
   ";" '(:ignore t :wk "comment")
   "p" '(projectile-command-map :wk "projectile")
   "g" '(:ignore t :which-key "git")
+  "l" '(lsp-command-keymap :wk "lsp (low prio)")
+  "q" '(:ignore t :wk "quit")
 
   )
 
@@ -748,6 +833,7 @@ I use multiple prefixes to branch into different key bindings chords
   "k" '(kill-current-buffer :wk)
   "b" '(counsel-switch-buffer :wk)
   "c" '(clean-buffer-list :wk)
+  "s" '(spacemacs/switch-to-scratch-buffer :wk "scratch buffer")
   )
 
 #+end_src
@@ -862,6 +948,19 @@ This may not be necessary with ~projectile-command-map~ bound to SPC-p
 ;;   "p"  'counsel-projectile
 ;;   "c"  'projectile-compile-project
 ;;   "d"  'projectile-dired)
+
+#+end_src
+
+*** Quit
+
+#+begin_src emacs-lisp
+;; QUIT
+(jep/leader-keys
+  :infix "q"
+  "q" '(save-buffers-kill-terminal :wk)
+  ;; "r" '(spacemacs/restart-emacs-resume-layouts :wk)
+  "r" '(spacemacs/restart-emacs :wk)
+  )
 
 #+end_src
 
