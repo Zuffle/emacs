@@ -529,6 +529,99 @@ Another keybinding like package but more for temporary/quick actions
 
 #+end_src
 
+** lsp
+Language server protocol to add language specific syntax and other IDE like features
+
+#+begin_src emacs-lisp
+
+(use-package lsp-mode
+  :init
+  (gsetq lsp-keymap-prefix "SPC l")
+  :ghook
+  ;; modes that use lsp or lsp-deferred in my case
+  ('(c++-mode-hook c-mode-hook) #'lsp-deferred)
+
+  :gfhook
+  #'lsp-enable-which-key-integration
+  :commands (lsp lsp-deferred)
+  )
+
+#+end_src
+
+*** lsp-pyright for python
+Not sure if I have to install this with pip
+
+#+begin_src emacs-lisp
+;; function to add to python-mode-hook instead of lambda
+(defun my-lsp-pyright-hook ()
+  (require 'lsp-pyright)
+  (lsp-deferred))
+
+(use-package lsp-pyright
+  :ghook
+  ('python-mode-hook  #'my-lsp-pyright-hook)
+  )
+#+end_src
+
+*** lsp-ui
+Documentation [[https://emacs-lsp.github.io/lsp-ui/#intro][lsp-ui]]
+Adds some ui features with lsp-mode. Nothing seems to show up by default and lsp-ui-doc
+has some problems with the way it shows the doc window
+
+#+begin_src emacs-lisp
+(use-package lsp-ui :commands lsp-ui-mode)
+
+#+end_src
+
+*** lsp-treemacs
+Some cool treemacs style "code trees" to display the structure of your code.
+This packages needs svg support I think so I added in a check for SVG support.
+
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list
+    :config
+    (unless  (image-type-available-p 'svg)
+      (lwarn 'lsp-treemacs 'warning "SVG support not available in this build of Emacs.\nRebuild with SVG support for lsp-treemacs")
+    )
+  )
+
+#+end_src
+
+*** lsp-ivy
+
+#+begin_src emacs-lisp
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+#+end_src
+
+*** company-mode
+
+#+begin_src emacs-lisp
+(use-package company
+  ;; :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  ;; :bind (:map company-active-map
+  ;;        ("<tab>" . company-complete-selection))
+  ;;       (:map lsp-mode-map
+  ;;        ("<tab>" . company-indent-or-complete-common))
+  :general
+  (:keymaps 'company-active-map
+            "<tab>" 'company-complete-selection)
+  (:keymaps 'lsp-mode-map
+        "TAB" 'company-indent-or-complete-common)
+  :config
+  (gsetq company-minimum-prefix-length 1
+	 company-idle-delay 0.0)
+  ;; (general-def
+  ;;   :keymaps 'company-mode-map
+  ;;   "TAB" 'company-complete-selection
+  ;;   )
+  )
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+#+end_src
+
 ** Magit
 Git integration into emacs. Very handy
 
