@@ -61,6 +61,11 @@ General.el is also useful for ~use-package~ declarations to specify keybindings,
 * EMACS
 This is for stuff that is native to emacs but might not fall under other categories
 
+TODO make defconsts for lists of things (ie the list of mode to exclude from line numbers
+example here:
+
+[[./emacs-general-defconst-example.png]]
+
 #+begin_src emacs-lisp
 
 (general-setq inhibit-startup-message t)
@@ -101,7 +106,9 @@ This also includes hook-functions I think
 ;;  Disable line numbers for modes in list
 (dolist (mode '(term-mode-hook
 		shell-mode-hook
-		eshell-mode-hook))
+		eshell-mode-hook
+		treemacs-mode-hook
+		))
   (add-hook mode 'disable-line-numbers-mode))
 
 ;; (defun dw/switch-project-action ()
