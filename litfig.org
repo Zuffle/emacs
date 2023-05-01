@@ -231,18 +231,50 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 (set-fringe-mode -1)			;give breathing room ?
 (menu-bar-mode -1)			; disable menu bar
 
-(general-setq display-line-numbers-type 'visual)
+(general-setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode t)
 (general-setq visible-bell t)			; change audio bells to visual
 
 #+end_src
 
 ** Font
+Some fonts I like:
++ Mint preinstalled:
++ Serif
+  + Gurajada Regular (nice numbers too)
+  + Likhan Normal
+  + NTR (/best roman + cool nums)
+  + P052 Roman
+  + Rekhaz
+  + Sarai Regular
+  + Suravaram WINNER for now
++ Sans
+  + Laksaman (fun)
+  + Khmer OS Regular
+  + Potti Sreeramulu
+  + TenaliRamakrishna Regular
+  + Umpush
+  + Ubuntu
+  + 
+
+
 #+begin_src emacs-lisp
 
-(set-face-attribute 'default nil :family "Fira Mono")
+(set-face-attribute 'default nil
+		    :font "Fira Mono"
+		    )
+
+(set-face-attribute 'fixed-pitch nil
+		    :font "Fira Mono"
+		    )
+
+(set-face-attribute 'variable-pitch nil
+		    :font "Suravaram"
+		    )
+
 
 #+end_src
+
 
 ** Theme
 Still deciding on a theme
