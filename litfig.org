@@ -104,7 +104,9 @@ This also includes hook-functions I think
   (display-line-numbers-mode 0))
 
 ;;  Disable line numbers for modes in list
-(dolist (mode '(term-mode-hook
+(dolist (mode '(
+		org-mode-hook
+		term-mode-hook
 		shell-mode-hook
 		eshell-mode-hook
 		treemacs-mode-hook
