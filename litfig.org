@@ -121,10 +121,10 @@ This also includes hook-functions I think
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
-  (variable-pitch-mode 1)
+  ;; (variable-pitch-mode 1)
   (auto-fill-mode 0)
   (visual-line-mode 1)
-  ;; (general-setq evil-auto-indent nil)
+  (general-setq evil-auto-indent nil)
   )
 
 
@@ -643,7 +643,7 @@ Git integration into emacs. Very handy
 #+end_src
 
 ** Org
-You know that Org mode is 
+You know what Org mode is
 
 #+begin_src emacs-lisp
 
@@ -651,6 +651,8 @@ You know that Org mode is
   :custom
   (org-src-preserve-indentation nil)
   (org-edit-src-content-indentation 0)
+  :gfhook
+  #'efs/org-mode-setup
   :config
   ;; customize vars with gsetq
   ;; shortcut to enter structure templates org-tempo
@@ -728,6 +730,16 @@ You know that Org mode is
 	  ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
 	   "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
   ;; // efs ep6
+  ;; set background color for src blocks
+  (require 'color)
+  (set-face-attribute 'org-block nil
+		      :foreground
+		      (color-darken-name
+		       (face-attribute 'default :foreground) 15)
+		      :background
+		      (color-darken-name
+		       (face-attribute 'default :background) 3))
+		      
 ;; Set faces for heading levels
   (dolist (face '((org-level-1 . 1.2)
                   (org-level-2 . 1.1)
@@ -737,11 +749,35 @@ You know that Org mode is
                   (org-level-6 . 1.0)
                   (org-level-7 . 1.0)
                   (org-level-8 . 1.0)))
-    (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
-  )
+    (set-face-attribute (car face) nil :font "Laksaman" :weight 'normal :height (* 1.4 (cdr face))))
 
+ ;; Make sure org-indent face is available
+(require 'org-indent)
 
-;; (efs/org-font-setup)
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+;; Get rid of the background on column views
+(set-face-attribute 'org-column nil :background nil)
+(set-face-attribute 'org-column-title nil :background nil)
+
+;; TODO: Others to consider
+;; '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+;; '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;; '(org-property-value ((t (:inherit fixed-pitch))) t)
+;; '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;; '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+;; '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+;; '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+)  
 
 #+end_src
 
