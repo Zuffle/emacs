@@ -81,6 +81,7 @@ example here:
 	       (org-babel-tangle)))
 	 nil t)))
 #+end_src
+
 ** Functions
 Some functions the most of which I likely found online
 This also includes hook-functions I think
@@ -247,6 +248,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 #+end_src
 
 ** Font
+TODO fonts and corss machine when they aren't available on every machine?
 Some fonts I like:
 + Mint preinstalled:
 + Serif
@@ -269,17 +271,17 @@ Some fonts I like:
 
 #+begin_src emacs-lisp
 
-(set-face-attribute 'default nil
-		    :font "Fira Mono"
-		    )
+  (set-face-attribute 'default nil
+		      :font "Fira Mono"
+		      )
 
-(set-face-attribute 'fixed-pitch nil
-		    :font "Fira Mono"
-		    )
+  (set-face-attribute 'fixed-pitch nil
+		      :font "Fira Mono"
+		      )
 
-(set-face-attribute 'variable-pitch nil
-		    :font "Suravaram"
-		    )
+  ;; (set-face-attribute 'variable-pitch nil
+		      ;; :font "Suravaram"
+		      ;; )
 
 
 #+end_src
@@ -946,7 +948,7 @@ You know what Org mode is
                   (org-level-6 . 1.0)
                   (org-level-7 . 1.0)
                   (org-level-8 . 1.0)))
-    (set-face-attribute (car face) nil :font "Laksaman" :weight 'normal :height (* 1.4 (cdr face))))
+    (set-face-attribute (car face) nil :weight 'normal :height (* 1.4 (cdr face))))
 
  ;; Make sure org-indent face is available
 (require 'org-indent)
