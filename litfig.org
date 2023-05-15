@@ -1164,11 +1164,12 @@ My hydra macros
 
 #+end_src
 ** Leader Key Keybindings
-I wanted to use SPC as my leader key
+I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emacs. To accomplish this I am using General.el's [[help:general-create-definer][general-create-definer]], using the :states and :keymaps. Override keymap is necessary because before using it, I noticed "SPC" in Dired was not activating my leader key, but dired-next-line
 
 #+begin_src emacs-lisp
 (general-create-definer jep/leader-keys
-  :keymaps '(normal insert emacs visual)
+  :states '(normal insert emacs visual)
+  :keymaps 'override
   :prefix "SPC"
   :non-normal-prefix "C-SPC"
   "SPC" nil
