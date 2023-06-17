@@ -1256,7 +1256,7 @@ I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emac
   :keymaps 'override
   :prefix "SPC"
   :non-normal-prefix "C-SPC"
-  "SPC" nil
+  "SPC" '(counsel-M-x :wk "M-x")
   )
 
 #+end_src
