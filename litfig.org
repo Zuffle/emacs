@@ -2,6 +2,23 @@
 * Literate Emacs init
 This is my literate init file.
 
+* Startup Performance
+
+#+begin_src emacs-lisp
+(defun efs/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                     (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook #'efs/display-startup-time)
+
+(setq gc-cons-threshold (* 50 1000 1000))
+
+(setq straight-check-for-modifications '(watch-files find-when-checking))
+#+end_src
+
 * Priority initializations
 These are items that are prerequisite for other parts of my init so they will be loaded up first
 
@@ -24,6 +41,8 @@ Straight setup is necessary near the beginning for *customization* purposes
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
+(setq use-package-verbose t)
+(setq use-package-minimum-reported-time 0)
 #+end_src
 
 early-init.el for straight
@@ -329,6 +348,7 @@ Useful key bindings:
 
 #+begin_src emacs-lisp
 (use-package term
+  :commands (term)
   :config
   (gsetq explicit-shell-file-name "bash") ;; Change this to zsh, etc
   ;;(setq explicit-zsh-args '())         ;; Use 'explicit-<shell>-args for shell-specific args
@@ -396,7 +416,8 @@ Useful key bindings:
             eshell-hist-ignoredups t
             eshell-scroll-to-bottom-on-input t))
 
-    (use-package eshell-git-prompt)
+    (use-package eshell-git-prompt
+      :after eshell)
 
     (use-package eshell
       :ghook
@@ -489,14 +510,17 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
     "l" 'dired-single-buffer)
 )
 
-(use-package dired-single)
+(use-package dired-single
+  :after dired)
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :defer t)
 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package dired-open
+  :after dired
   :config
   ;; Doesn't work as expected!
   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
@@ -512,32 +536,10 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 #+end_src
 
 * Packages
-** Counsel
-Counsel-swiper-ivy for completion and searching buffers
-
+** Ivy
+*** Install
 #+begin_src emacs-lisp
-(use-package counsel
-  :init
-  (ivy-mode 1))
-#+end_src
-
-*** Counsel-projectile
-Counsel and projectile integration
-
-#+begin_src emacs-lisp
-(use-package counsel-projectile
-  :after projectile
-  :bind (("C-M-p" . counsel-projectile-find-file))
-  :config
-  (counsel-projectile-mode)
-  )
-
-#+end_src
-
-*** Ivy rich
-Don't super remember what this is for
-#+begin_src emacs-lisp
-(use-package ivy-rich
+(use-package ivy
   :general
   (
    "C-s" 'swiper
@@ -563,8 +565,19 @@ Don't super remember what this is for
 	    "C-k" 'ivy-previous-line
 	    "C-d" 'ivy-reverse-i-search-kill
 	    )
-  :init
-  (ivy-rich-mode)
+  :config
+  (ivy-mode 1)
+  )
+#+end_src
+
+*** Ivy rich
+Don't super remember what this is for
+**** Install
+#+begin_src emacs-lisp
+(use-package ivy-rich
+  :after ivy
+  :config
+  (ivy-rich-mode 1)
   )
 
 #+end_src
@@ -573,16 +586,32 @@ Don't super remember what this is for
 Ivy and hydra integration
 #+begin_src emacs-lisp
 (use-package ivy-hydra
+  :after ivy
   )
 
 #+end_src
+*** Counsel
+Counsel is actually like wrapping emacs commands with Ivy enhancements
 
-** Diminish
-Not sure what this is RN
+**** Install
+#+begin_src emacs-lisp
+(use-package counsel
+  :after ivy
+  :config
+  (counsel-mode 1))
+#+end_src
+
+*** Counsel-projectile
+Counsel and projectile integration
 
 #+begin_src emacs-lisp
-(use-package diminish
+(use-package counsel-projectile
+  :after (projectile)
+  :bind (("C-M-p" . counsel-projectile-find-file))
+  :config
+  (counsel-projectile-mode)
   )
+
 #+end_src
 
 ** Doom-themes
@@ -622,6 +651,7 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
 #+begin_src emacs-lisp
 (use-package evil
   ;; :defer t
+  :demand t
   :init
   (general-setq evil-want-integration t)
   (general-setq evil-want-keybinding nil)
@@ -677,6 +707,9 @@ can use a key sequence to get back into normal mode
 
 #+begin_src emacs-lisp
 (use-package evil-escape
+  :defer t
+  :commands (evil-escape-pre-command-hook)
+  :init (general-add-hook 'pre-command-hook 'evil-escape-pre-command-hook)
   :config
   (evil-escape-mode 1)
   :custom
@@ -692,10 +725,22 @@ takes a character as argument and will surround the selection with it
 
 #+begin_src emacs-lisp
 (use-package evil-surround
+  :after evil
   :config
   (global-evil-surround-mode 1)
   )
 
+#+end_src
+
+** Esup
+*** Install
+#+begin_src emacs-lisp
+(use-package esup
+  :commands esup
+  :config
+  ;; (gsetq esup-user-init-file "/home/jsp/.config/emacs/init.el") 
+  (gsetq esup-depth 0)
+)
 #+end_src
 
 ** Helpful
@@ -724,6 +769,7 @@ That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which
 #+begin_src emacs-lisp
 
 (use-package howm
+  :commands (howm-menu)
   ;; :init
   ;; :hook
   ;; (howm-menu . evil-emacs-state)
@@ -840,6 +886,7 @@ Git integration into emacs. Very handy
 
 #+begin_src emacs-lisp
 (use-package magit
+  :commands magit-status
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   )
@@ -852,6 +899,7 @@ You know what Org mode is
 #+begin_src emacs-lisp
 
 (use-package org
+  :defer t
   :custom
   (org-src-preserve-indentation nil)
   (org-edit-src-content-indentation 0)
@@ -1057,6 +1105,7 @@ I got this for org-eldoc.el!
 
 #+begin_src emacs-lisp
 (use-package org-contrib
+  :after org
   :config
   (org-eldoc-load)
   )
@@ -1071,9 +1120,10 @@ A package that allows for easy actionables within organized project workspaces
   :diminish projectile-mode
   :config (projectile-mode)
   :custom (projectile-completion-system 'ivy)
-  :demand t
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
+  ;; :bind-keymap
+  ;; ("C-c p" . projectile-command-map)
+  :general
+  ("C-c p" 'projectile-command-map)
   :init
   (when (file-directory-p "~/projects/coding")
     (general-setq projectile-project-search-path '("~/projects/coding")))
@@ -1096,6 +1146,7 @@ A useful package to restart emacs from within emacs (Spacemacs uses this)
 
 #+begin_src emacs-lisp
 (use-package restart-emacs
+  :defer 3
   )
 #+end_src
 ** Smex
@@ -1120,6 +1171,7 @@ Quick way to enable undoing with Evil mode.
 
 #+begin_src emacs-lisp
 (use-package undo-tree
+  :defer 3
   :config
   (global-undo-tree-mode 1)
   (defvar undo-dir (concat user-emacs-directory "undo/"))
@@ -1135,9 +1187,10 @@ Awesome package that shows keybinding/keychord completions in the minibuffer
 
 #+begin_src emacs-lisp
 (use-package which-key
-  :init (which-key-mode)
+  :defer 0
   :diminish which-key-mode
   :config
+  (which-key-mode)
   (general-setq which-key-idle-delay 0.3)
   ;; (general-setq which-key-separator " -> ")
   )
@@ -1340,6 +1393,10 @@ This may not be necessary with ~projectile-command-map~ bound to SPC-p
 #+end_src
 
 * End
+#+begin_src emacs-lisp
+(setq gc-cons-threshold (* 2 1000 1000))
+#+end_src
+
 # Local Variables:
 # eval: (add-hook 'after-save-hook (lambda nil (if (y-or-n-p "Tangle?") (org-babel-tangle))) nil t)
 # End:
