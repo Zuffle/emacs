@@ -24,6 +24,7 @@ These are items that are prerequisite for other parts of my init so they will be
 
 ** Straight.el
 Straight setup is necessary near the beginning for *customization* purposes
+*** Install
 
 #+begin_src emacs-lisp
 
@@ -67,6 +68,7 @@ I am using general.el for key bindings and notably for ~general-setq~ for defcus
 
 General.el is also useful for ~use-package~ declarations to specify keybindings, but I don't use it.
 
+*** Install
 #+begin_src emacs-lisp
 
 (use-package general
@@ -79,12 +81,16 @@ General.el is also useful for ~use-package~ declarations to specify keybindings,
 
 * EMACS
 This is for stuff that is native to emacs but might not fall under other categories
+*************** TODO make defconsts for lists
 
 TODO make defconsts for lists of things (ie the list of mode to exclude from line numbers
-example here:
+example below
+*************** END
+
 
 [[./emacs-general-defconst-example.png]]
 
+** Install
 #+begin_src emacs-lisp
 
 (general-setq inhibit-startup-message t)
@@ -104,6 +110,7 @@ example here:
 ** Functions
 Some functions the most of which I likely found online
 This also includes hook-functions I think
+
 
 #+begin_src emacs-lisp
 
@@ -150,7 +157,7 @@ This also includes hook-functions I think
 
 #+end_src
 
-*** Spacemacs functions
+**** Spacemacs functions
 These are functions I am stealing from Spacemacs
 
 #+begin_src emacs-lisp
@@ -250,7 +257,6 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 #+end_src
 
 * UI
-
 ** General
 #+begin_src emacs-lisp
 
@@ -327,7 +333,7 @@ Still deciding on a theme
 
 #+end_src
 
-* Terminals
+* Terminal
 Making terminal emulators useful in emacs, or maybe more convenient
 
 ** term-mode
@@ -584,6 +590,7 @@ Don't super remember what this is for
 
 *** Ivy hydra
 Ivy and hydra integration
+**** Install
 #+begin_src emacs-lisp
 (use-package ivy-hydra
   :after ivy
@@ -604,6 +611,7 @@ Counsel is actually like wrapping emacs commands with Ivy enhancements
 *** Counsel-projectile
 Counsel and projectile integration
 
+**** Install
 #+begin_src emacs-lisp
 (use-package counsel-projectile
   :after (projectile)
@@ -680,7 +688,7 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
 *** Evil collection
 A set of package to further integrate evil into emacs
 
-*** Hooks
+**** Hooks
 #+begin_src emacs-lisp
 (defun jsp/remove-from-evil-collection-list ()
       (dolist (mode `(
@@ -689,7 +697,7 @@ A set of package to further integrate evil into emacs
 	(delete mode evil-collection-mode-list))
       )
 #+end_src
-*** Install
+**** Install
 #+begin_src emacs-lisp
   (use-package evil-collection
     :after evil
@@ -705,6 +713,7 @@ A set of package to further integrate evil into emacs
 *** Evil escape
 can use a key sequence to get back into normal mode
 
+**** Install
 #+begin_src emacs-lisp
 (use-package evil-escape
   :defer t
@@ -722,6 +731,7 @@ can use a key sequence to get back into normal mode
 add "s" bindings to normal mode to "surround" which is a command that
 takes a character as argument and will surround the selection with it
 
+**** Install
 
 #+begin_src emacs-lisp
 (use-package evil-surround
@@ -745,6 +755,7 @@ takes a character as argument and will surround the selection with it
 
 ** Helpful
 Package that revamps Emacs builtin help commands
+*** Install
 #+begin_src emacs-lisp
 (use-package helpful
   :custom
@@ -766,6 +777,7 @@ A note taking mode for emacs designed around quick note taking and creating a pe
 Howm is not really stubborn, it just activates howm-menu-mode in an unanticipated way.
 That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which is called when typing the C-c ,-, keybinding
 
+*** Install
 #+begin_src emacs-lisp
 
 (use-package howm
@@ -782,6 +794,7 @@ That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which
 ** Hydra
 Another keybinding like package but more for temporary/quick actions
 
+*** Install
 #+begin_src emacs-lisp
 (use-package hydra
   )
@@ -791,6 +804,7 @@ Another keybinding like package but more for temporary/quick actions
 ** lsp
 Language server protocol to add language specific syntax and other IDE like features
 
+*** Install
 #+begin_src emacs-lisp
 
 (use-package lsp-mode
@@ -810,6 +824,7 @@ Language server protocol to add language specific syntax and other IDE like feat
 *** lsp-pyright for python
 Not sure if I have to install this with pip
 
+**** Install
 #+begin_src emacs-lisp
 ;; function to add to python-mode-hook instead of lambda
 (defun my-lsp-pyright-hook ()
@@ -827,6 +842,7 @@ Documentation [[https://emacs-lsp.github.io/lsp-ui/#intro][lsp-ui]]
 Adds some ui features with lsp-mode. Nothing seems to show up by default and lsp-ui-doc
 has some problems with the way it shows the doc window
 
+**** Install
 #+begin_src emacs-lisp
 (use-package lsp-ui :commands lsp-ui-mode)
 
@@ -836,6 +852,7 @@ has some problems with the way it shows the doc window
 Some cool treemacs style "code trees" to display the structure of your code.
 This packages needs svg support I think so I added in a check for SVG support.
 
+**** Install
 #+begin_src emacs-lisp
   (use-package lsp-treemacs :commands lsp-treemacs-errors-list
     :config
@@ -847,13 +864,14 @@ This packages needs svg support I think so I added in a check for SVG support.
 #+end_src
 
 *** lsp-ivy
-
+**** Install
 #+begin_src emacs-lisp
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 #+end_src
 
 *** company-mode
 
+**** Install
 #+begin_src emacs-lisp
 (use-package company
   ;; :after lsp-mode
@@ -884,6 +902,7 @@ This packages needs svg support I think so I added in a check for SVG support.
 ** Magit
 Git integration into emacs. Very handy
 
+*** Install
 #+begin_src emacs-lisp
 (use-package magit
   :commands magit-status
@@ -896,8 +915,8 @@ Git integration into emacs. Very handy
 ** Org
 You know what Org mode is
 
+*** Install
 #+begin_src emacs-lisp
-
 (use-package org
   :defer t
   :custom
@@ -907,6 +926,8 @@ You know what Org mode is
   #'efs/org-mode-setup
   :config
   ;; customize vars with gsetq
+  (require 'org-inlinetask)
+
   ;; shortcut to enter structure templates org-tempo
   (gsetq org-modules (append org-modules '(org-tempo)))
   (dolist (template '(
@@ -928,6 +949,7 @@ You know what Org mode is
 	'("~/orgfiles/tasks.org"
 	  "~/orgfiles/bdays.org")
 	)
+
   (general-setq org-agenda-start-with-log-mode t)
   (general-setq org-log-done 'time)
   (general-setq org-log-into-drawer t)
@@ -1029,6 +1051,7 @@ You know what Org mode is
 ;; '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
 ;; '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
 ;; '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+
 )  
 
 #+end_src
@@ -1088,6 +1111,7 @@ You know what Org mode is
 *** Org Superstar
 Customize org mode bullet. Successor to org-bullets.el
 
+**** Install
 #+begin_src emacs-lisp
 (use-package org-superstar
   :after org
@@ -1103,6 +1127,7 @@ Customize org mode bullet. Successor to org-bullets.el
 Compilation of third party contributions to org mode.
 I got this for org-eldoc.el!
 
+**** Install
 #+begin_src emacs-lisp
 (use-package org-contrib
   :after org
@@ -1115,6 +1140,7 @@ I got this for org-eldoc.el!
 ** Projectile
 A package that allows for easy actionables within organized project workspaces
 
+*** Install
 #+begin_src emacs-lisp
 (use-package projectile
   :diminish projectile-mode
@@ -1135,6 +1161,7 @@ A package that allows for easy actionables within organized project workspaces
 ** Rainbow delimiter
 This package will color matching delimiters for distinguishing things like parens levels
 
+*** Install
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -1152,6 +1179,7 @@ A useful package to restart emacs from within emacs (Spacemacs uses this)
 ** Smex
 This is used with Counsel for M-x to have recently used commands at the top of the list
 
+*** Install
 #+begin_src emacs-lisp
 (use-package smex)
 
@@ -1159,7 +1187,8 @@ This is used with Counsel for M-x to have recently used commands at the top of t
 
 ** Spaceline
 A package that copies Spacemacs' unique modeline
-#+begin_src emacs-lisp
+*** Install
+#+begin_src emacs-lisp 
 (use-package spaceline
   :config
   (spaceline-emacs-theme)
@@ -1169,6 +1198,7 @@ A package that copies Spacemacs' unique modeline
 ** undo-tree
 Quick way to enable undoing with Evil mode.
 
+*** Install
 #+begin_src emacs-lisp
 (use-package undo-tree
   :defer 3
@@ -1185,6 +1215,7 @@ Quick way to enable undoing with Evil mode.
 ** which-key
 Awesome package that shows keybinding/keychord completions in the minibuffer
 
+*** Install
 #+begin_src emacs-lisp
 (use-package which-key
   :defer 0
@@ -1323,8 +1354,6 @@ I use multiple prefixes to branch into different key bindings chords
   "dk" '(describe-key :wk)
   "dg" '(general-describe-keybindings :wk)
   "dm" '(describe-mode :wk)
-  
-
   )
 
 #+end_src
