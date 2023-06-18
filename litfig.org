@@ -311,16 +311,142 @@ Some fonts I like:
 
 #+end_src
 
-
-** Theme
-Still deciding on a theme
+** Themes
+*** enable theme lists
 #+begin_src emacs-lisp
+(defconst enable-themes
+  '(doom-wilmersdorf
+    zenburn
+    apropospriate-dark
+    apropospriate-light
+    ample
+    ample-flat
+    ample-light
+    brin
+    granger
+    odersky
+    fogus
+    dorsey
+    gotham
+    inkpot
+    kaolin-dark
+    kaolin-light
+    kaolin-bubblegum
+    kaolin-ocean
+    kaolin-temple
+    kaolin-valley-dark
+    kaolin-valley-light
+    soothe
+    hc-zenburn
+    planet
+    twilight
+    twilight-bright
+    twilight-anti-bright
+    ))
+#+end_src
 
-(load-theme 'tsdh-dark)
+*** Ample
+#+begin_src emacs-lisp
+(use-package ample-theme)
+#+end_src
+
+*** Apropospriate
+#+begin_src emacs-lisp
+(use-package apropospriate-theme)
+#+end_src
+
+*** Darkburn
+#+begin_src emacs-lisp
+(use-package darkburn-theme)
+#+end_src
+
+*** doom-themes
+#+begin_src emacs-lisp
+(use-package doom-themes
+  :config
+  (load-theme 'doom-wilmersdorf t)
+)
 
 #+end_src
 
-** Gotta fix Unicode stuff here
+*** Gotham
+#+begin_src emacs-lisp
+(use-package gotham-theme)
+#+end_src
+
+*** Hc zenburn
+#+begin_src emacs-lisp
+(use-package hc-zenburn-theme)
+#+end_src
+
+*** Inkpot
+#+begin_src emacs-lisp
+(use-package inkpot-theme)
+#+end_src
+
+*** Kaolin
+themes I like
+- kaolin-dark
+- kaolin-light
+- kaolin-bubblegum
+- kaolin-ocean
+- kaolin-temple
+- kaolin-valley-dark
+- kaolin-valley-light
+
+#+begin_src emacs-lisp
+(use-package kaolin-themes)
+#+end_src
+
+*** Planet
+#+begin_src emacs-lisp
+(use-package planet-theme)
+#+end_src
+
+*** Soothe
+#+begin_src emacs-lisp
+(use-package soothe-theme)
+#+end_src
+
+*** Sublime
+I like the themes:
+- Brin
+- Granger
+- Odersky
+- Fogus
+- Dorsey
+
+#+begin_src emacs-lisp
+(use-package sublime-themes)
+#+end_src
+
+*** twilight
+#+begin_src emacs-lisp
+(use-package twilight-bright-theme)
+(use-package twilight-theme)
+(use-package twilight-anti-bright-theme)
+#+end_src
+
+*** Zenburn
+**** Install
+#+begin_src emacs-lisp
+(use-package zenburn-theme)
+#+end_src
+
+*** Load theme
+Still deciding on a theme
+#+begin_src emacs-lisp
+
+  (dolist (theme enable-themes nil)
+    (load-theme theme t nil)
+    (disable-theme theme)
+    )
+
+  (enable-theme 'zenburn)
+
+#+end_src
+
+**** Gotta fix Unicode stuff here
 #+begin_src emacs-lisp
 
 ;; UTF-8 support
@@ -622,17 +748,17 @@ Counsel and projectile integration
 
 #+end_src
 
-** Doom-themes
-#+begin_src emacs-lisp
-(use-package doom-themes
-  ;; :init (load-theme 'doom-wilmersdorf t)
-)
+** Diminish
+Not sure what this is RN
 
+*** Install
+#+begin_src emacs-lisp
+(use-package diminish
+  )
 #+end_src
 
 ** Evil
 Extensible vim emulation layer! 
-
 *** Hooks
 It seems like we need this add-to-list function for evil-emacs-state-modes to be in a hook otherwise it might not fire correctly
 #+begin_src emacs-lisp
