@@ -1416,7 +1416,7 @@ I use multiple prefixes to branch into different key bindings chords
 (jep/leader-keys
   :infix "b"
   "k" '(kill-current-buffer :wk)
-  "b" '(counsel-switch-buffer :wk)
+  "b" '(counsel-ibuffer :wk)
   "c" '(clean-buffer-list :wk)
   "s" '(spacemacs/switch-to-scratch-buffer :wk "scratch buffer")
   )
