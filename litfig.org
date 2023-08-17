@@ -79,6 +79,16 @@ General.el is also useful for ~use-package~ declarations to specify keybindings,
 
 #+end_src
 
+** Hydra
+Another keybinding like package but more for temporary/quick actions
+
+*** Install
+#+begin_src emacs-lisp
+(use-package hydra
+  )
+
+#+end_src
+
 * EMACS
 This is for stuff that is native to emacs but might not fall under other categories
 *************** TODO make defconsts for lists
@@ -667,6 +677,208 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
 #+end_src
 
+* Key bindings
+** Hydra Macros
+My hydra macros
+
+#+begin_src emacs-lisp
+;; text scale hydra
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-decrease "out")
+  ("k" text-scale-increase "in")
+  ("0" (text-scale-set 0))
+  ("q" nil "quit")
+  )
+  
+;; buffer hydra
+(defhydra hydra-buffer-nav (:timeout 4)
+  "navigate buffers"
+)
+
+#+end_src
+
+** Leader Key Keybindings
+I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emacs. To accomplish this I am using General.el's [[help:general-create-definer][general-create-definer]], using the :states and :keymaps. Override keymap is necessary because before using it, I noticed "SPC" in Dired was not activating my leader key, but dired-next-line
+
+#+begin_src emacs-lisp
+(general-create-definer jep/leader-keys
+  :states '(normal insert emacs visual)
+  :keymaps 'override
+  :prefix "SPC"
+  :non-normal-prefix "C-SPC"
+  "SPC" '(counsel-M-x :wk "M-x")
+  )
+
+#+end_src
+*** Prefix key setup
+I use multiple prefixes to branch into different key bindings chords
+
+#+begin_src emacs-lisp
+(jep/leader-keys
+  "TAB" '(spacemacs/alternate-buffer :wk "last buffer")
+
+  ;; prefix key setup
+  "f" '(:ignore t :wk "files")
+  "t" '(:ignore t :wk "toggles")
+  "a" '(:ignore t :wk "applications")
+  "w" '(:ignore t :wk "window")
+  "h" '(:ignore t :wk "help")
+  "b" '(:ignore t :wk "buffers")
+  ";" '(:ignore t :wk "comment")
+  "p" '(projectile-command-map :wk "projectile")
+  "g" '(:ignore t :which-key "git")
+  "l" '(lsp-command-keymap :wk "lsp (low prio)")
+  "q" '(:ignore t :wk "quit")
+
+  )
+
+#+end_src
+*** Applications
+#+begin_src emacs-lisp
+(jep/leader-keys
+  :infix "a"
+  "o" '(org-mode :wk)
+)
+#+end_src
+
+*** Buffers
+
+#+begin_src emacs-lisp
+(jep/leader-keys
+  :infix "b"
+  "k" '(kill-current-buffer :wk)
+  "b" '(counsel-ibuffer :wk)
+  "c" '(clean-buffer-list :wk)
+  "s" '(spacemacs/switch-to-scratch-buffer :wk "scratch buffer")
+  )
+
+#+end_src
+
+*** Comments
+
+#+begin_src emacs-lisp
+(jep/leader-keys
+  :infix ";"
+  ";" '(comment-line :wk)		
+  )					
+
+#+end_src
+
+*** Files
+
+#+begin_src emacs-lisp
+;; FILES
+(jep/leader-keys
+  :infix "f"
+  "f" '(counsel-find-file :wk)
+  "s" '(save-buffer :wk)
+  "r" '(counsel-recentf :wk)
+  )
+
+#+end_src
+
+*** Git
+
+#+begin_src emacs-lisp
+;; GIT
+(jep/leader-keys
+  :infix "g"
+  "s"  'magit-status
+  "d"  'magit-diff-unstaged
+  "c"  'magit-branch-or-checkout
+  "l"   '(:ignore t :which-key "log")
+  "lc" 'magit-log-current
+  "lf" 'magit-log-buffer-file
+  "b"  'magit-branch
+  "P"  'magit-push-current
+  "p"  'magit-pull-branch
+  "f"  'magit-fetch
+  "F"  'magit-fetch-all
+  "r"  'magit-rebase
+  )
+
+#+end_src
+
+*** Help
+
+#+begin_src emacs-lisp
+;; HELP
+(jep/leader-keys
+  :infix "h"
+  "d" '(:ignore t :wk "describe")
+  "dv" '(describe-variable :wk)
+  "df" '(describe-function :wk)
+  "dk" '(describe-key :wk)
+  "dg" '(general-describe-keybindings :wk)
+  "dm" '(describe-mode :wk)
+  )
+
+#+end_src
+
+*** Toggles
+
+#+begin_src emacs-lisp
+;; TOGGLES
+(jep/leader-keys
+  :infix "t"
+  "t" '(counsel-load-theme :which-key)
+  "s" '(hydra-text-scale/body :wk)
+  )
+
+#+end_src
+
+*** Search
+
+#+begin_src emacs-lisp
+;; SEARCH
+(jep/leader-keys
+  :infix "s"
+  "s" '(swiper :wk)
+  )
+
+#+end_src
+
+*** Windows
+
+#+begin_src emacs-lisp
+;; WINDOW
+(jep/leader-keys
+  :infix "w"
+  "d" '(:wk)
+  )
+
+#+end_src
+
+*** Project
+This may not be necessary with ~projectile-command-map~ bound to SPC-p
+#+begin_src emacs-lisp
+;; PROJECT
+;; (jep/leader-keys
+;;   :infix "p"
+;;   "f"  'counsel-projectile-find-file
+;;   "s"  'counsel-projectile-switch-project
+;;   "F"  'counsel-projectile-rg
+;;   ;; "pF"  'consult-ripgrep
+;;   "p"  'counsel-projectile
+;;   "c"  'projectile-compile-project
+;;   "d"  'projectile-dired)
+
+#+end_src
+
+*** Quit
+
+#+begin_src emacs-lisp
+;; QUIT
+(jep/leader-keys
+  :infix "q"
+  "q" '(save-buffers-kill-terminal :wk)
+  ;; "r" '(spacemacs/restart-emacs-resume-layouts :wk)
+  "r" '(spacemacs/restart-emacs :wk)
+  )
+
+#+end_src
+
 * Packages
 ** Ivy
 *** Install
@@ -767,7 +979,7 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
     (dolist (mode '(
 		    eshell-mode
 		    howm-menu-mode
-		    Info-mode
+		    ;; Info-mode
 		    ))
       (dolist (state `(
 		       ,evil-emacs-state-modes
@@ -778,7 +990,6 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
 	(delete mode state))
       (add-to-list 'evil-emacs-state-modes mode))
 )
-
 #+end_src
 
 *** Install
@@ -795,7 +1006,7 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
   (general-setq evil-want-C-i-jump nil)
   ;; (general-setq evil-default-state 'emacs)
   :hook
-  (evil-mode . jsp/emacs-state-hook)
+  ;; (evil-mode . jsp/emacs-state-hook)
   (howm-menu . evil-initialize)
 
   :config
@@ -805,8 +1016,9 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
   ;; (my-move-key evil-motion-state-map evil-normal-state-map " ") 
   (general-unbind 'motion
     "SPC"
+    "RET"
     )
-  
+  (jsp/emacs-state-hook)
   )
 
 #+end_src
@@ -903,26 +1115,37 @@ A note taking mode for emacs designed around quick note taking and creating a pe
 Howm is not really stubborn, it just activates howm-menu-mode in an unanticipated way.
 That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which is called when typing the C-c ,-, keybinding
 
+I need to change howm-set-keymap function to use general.el to set
+howm keys with my prefix key SPC a h
+
 *** Install
 #+begin_src emacs-lisp
 
 (use-package howm
-  :commands (howm-menu)
+  :defer 1
+  ;; :commands (howm-menu)
+  ;; TODO howm-set-keymap general-definer
   ;; :init
+  ;; (gsetq howm-prefix " ah")
   ;; :hook
   ;; (howm-menu . evil-emacs-state)
-  ;; ;; :config
+  :config
   ;; (turn-off-evil-mode)
-  )
-
-#+end_src
-
-** Hydra
-Another keybinding like package but more for temporary/quick actions
-
-*** Install
-#+begin_src emacs-lisp
-(use-package hydra
+  ;; (evil-make-overriding-map action-lock-mode-map)
+  (evil-set-initial-state 'howm-view-summary-mode 'emacs)
+  (evil-set-initial-state 'howm-view-contents-mode 'emacs)
+  ;; (add-to-list 'evil-collection-mode-list 'howm-view-summary-mode)
+  (evil-make-overriding-map howm-view-summary-mode-map)
+  :general
+  (:keymaps 'howm-view-summary-mode-map
+   "<backtab>" 'howm-view-summary-previous-section
+   "j"         'howm-view-summary-next-section
+   "k"         'howm-view-summary-previous-section
+   "C-j"       'riffle-scroll-other-window
+   "C-k"       'riffle-scroll-other-window-down
+   "C-h"       nil
+   )
+   ;; I might want to add one for 'howm-view-summary-mode-map
   )
 
 #+end_src
@@ -1353,200 +1576,6 @@ Awesome package that shows keybinding/keychord completions in the minibuffer
   )
 
 #+end_src
-* Key bindings
-** Hydra Macros
-My hydra macros
-
-#+begin_src emacs-lisp
-;; text scale hydra
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-decrease "out")
-  ("k" text-scale-increase "in")
-  ("0" (text-scale-set 0))
-  ("q" nil "quit")
-  )
-  
-;; buffer hydra
-(defhydra hydra-buffer-nav (:timeout 4)
-  "navigate buffers"
-)
-
-#+end_src
-** Leader Key Keybindings
-I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emacs. To accomplish this I am using General.el's [[help:general-create-definer][general-create-definer]], using the :states and :keymaps. Override keymap is necessary because before using it, I noticed "SPC" in Dired was not activating my leader key, but dired-next-line
-
-#+begin_src emacs-lisp
-(general-create-definer jep/leader-keys
-  :states '(normal insert emacs visual)
-  :keymaps 'override
-  :prefix "SPC"
-  :non-normal-prefix "C-SPC"
-  "SPC" '(counsel-M-x :wk "M-x")
-  )
-
-#+end_src
-*** Prefix key setup
-I use multiple prefixes to branch into different key bindings chords
-
-#+begin_src emacs-lisp
-(jep/leader-keys
-  "TAB" '(spacemacs/alternate-buffer :wk "last buffer")
-
-  ;; prefix key setup
-  "f" '(:ignore t :wk "files")
-  "t" '(:ignore t :wk "toggles")
-  "a" '(:ignore t :wk "applications")
-  "w" '(:ignore t :wk "window")
-  "h" '(:ignore t :wk "help")
-  "b" '(:ignore t :wk "buffers")
-  ";" '(:ignore t :wk "comment")
-  "p" '(projectile-command-map :wk "projectile")
-  "g" '(:ignore t :which-key "git")
-  "l" '(lsp-command-keymap :wk "lsp (low prio)")
-  "q" '(:ignore t :wk "quit")
-
-  )
-
-#+end_src
-
-*** Buffers
-
-#+begin_src emacs-lisp
-(jep/leader-keys
-  :infix "b"
-  "k" '(kill-current-buffer :wk)
-  "b" '(counsel-ibuffer :wk)
-  "c" '(clean-buffer-list :wk)
-  "s" '(spacemacs/switch-to-scratch-buffer :wk "scratch buffer")
-  )
-
-#+end_src
-
-*** Comments
-
-#+begin_src emacs-lisp
-(jep/leader-keys
-  :infix ";"
-  ";" '(comment-line :wk)		
-  )					
-
-#+end_src
-
-*** Files
-
-#+begin_src emacs-lisp
-;; FILES
-(jep/leader-keys
-  :infix "f"
-  "f" '(counsel-find-file :wk)
-  "s" '(save-buffer :wk)
-  "r" '(counsel-recentf :wk)
-  )
-
-#+end_src
-
-*** Git
-
-#+begin_src emacs-lisp
-;; GIT
-(jep/leader-keys
-  :infix "g"
-  "s"  'magit-status
-  "d"  'magit-diff-unstaged
-  "c"  'magit-branch-or-checkout
-  "l"   '(:ignore t :which-key "log")
-  "lc" 'magit-log-current
-  "lf" 'magit-log-buffer-file
-  "b"  'magit-branch
-  "P"  'magit-push-current
-  "p"  'magit-pull-branch
-  "f"  'magit-fetch
-  "F"  'magit-fetch-all
-  "r"  'magit-rebase
-  )
-
-#+end_src
-
-*** Help
-
-#+begin_src emacs-lisp
-;; HELP
-(jep/leader-keys
-  :infix "h"
-  "d" '(:ignore t :wk "describe")
-  "dv" '(describe-variable :wk)
-  "df" '(describe-function :wk)
-  "dk" '(describe-key :wk)
-  "dg" '(general-describe-keybindings :wk)
-  "dm" '(describe-mode :wk)
-  )
-
-#+end_src
-
-*** Toggles
-
-#+begin_src emacs-lisp
-;; TOGGLES
-(jep/leader-keys
-  :infix "t"
-  "t" '(counsel-load-theme :which-key)
-  "s" '(hydra-text-scale/body :wk)
-  )
-
-#+end_src
-
-*** Search
-
-#+begin_src emacs-lisp
-;; SEARCH
-(jep/leader-keys
-  :infix "s"
-  "s" '(swiper :wk)
-  )
-
-#+end_src
-
-*** Windows
-
-#+begin_src emacs-lisp
-;; WINDOW
-(jep/leader-keys
-  :infix "w"
-  "d" '(:wk)
-  )
-
-#+end_src
-
-*** Project
-This may not be necessary with ~projectile-command-map~ bound to SPC-p
-#+begin_src emacs-lisp
-;; PROJECT
-;; (jep/leader-keys
-;;   :infix "p"
-;;   "f"  'counsel-projectile-find-file
-;;   "s"  'counsel-projectile-switch-project
-;;   "F"  'counsel-projectile-rg
-;;   ;; "pF"  'consult-ripgrep
-;;   "p"  'counsel-projectile
-;;   "c"  'projectile-compile-project
-;;   "d"  'projectile-dired)
-
-#+end_src
-
-*** Quit
-
-#+begin_src emacs-lisp
-;; QUIT
-(jep/leader-keys
-  :infix "q"
-  "q" '(save-buffers-kill-terminal :wk)
-  ;; "r" '(spacemacs/restart-emacs-resume-layouts :wk)
-  "r" '(spacemacs/restart-emacs :wk)
-  )
-
-#+end_src
-
 * End
 #+begin_src emacs-lisp
 (setq gc-cons-threshold (* 2 1000 1000))
