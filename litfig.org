@@ -702,12 +702,11 @@ My hydra macros
 I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emacs. To accomplish this I am using General.el's [[help:general-create-definer][general-create-definer]], using the :states and :keymaps. Override keymap is necessary because before using it, I noticed "SPC" in Dired was not activating my leader key, but dired-next-line
 
 #+begin_src emacs-lisp
-(general-create-definer jep/leader-keys
+(general-create-definer jsp/leader-keys
   :states '(normal insert emacs visual)
   :keymaps 'override
   :prefix "SPC"
   :non-normal-prefix "C-SPC"
-  "SPC" '(counsel-M-x :wk "M-x")
   )
 
 #+end_src
@@ -715,7 +714,8 @@ I wanted to use SPC as my leader key, like Spacemacs which introduced me to Emac
 I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
-(jep/leader-keys
+(jsp/leader-keys
+  "SPC" '(counsel-M-x :wk "M-x")
   "TAB" '(spacemacs/alternate-buffer :wk "last buffer")
 
   ;; prefix key setup
@@ -736,16 +736,15 @@ I use multiple prefixes to branch into different key bindings chords
 #+end_src
 *** Applications
 #+begin_src emacs-lisp
-(jep/leader-keys
+(jsp/leader-keys
   :infix "a"
-  "o" '(org-mode :wk)
 )
 #+end_src
 
 *** Buffers
 
 #+begin_src emacs-lisp
-(jep/leader-keys
+(jsp/leader-keys
   :infix "b"
   "k" '(kill-current-buffer :wk)
   "b" '(counsel-ibuffer :wk)
@@ -758,7 +757,7 @@ I use multiple prefixes to branch into different key bindings chords
 *** Comments
 
 #+begin_src emacs-lisp
-(jep/leader-keys
+(jsp/leader-keys
   :infix ";"
   ";" '(comment-line :wk)		
   )					
@@ -769,7 +768,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; FILES
-(jep/leader-keys
+(jsp/leader-keys
   :infix "f"
   "f" '(counsel-find-file :wk)
   "s" '(save-buffer :wk)
@@ -782,7 +781,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; GIT
-(jep/leader-keys
+(jsp/leader-keys
   :infix "g"
   "s"  'magit-status
   "d"  'magit-diff-unstaged
@@ -804,7 +803,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; HELP
-(jep/leader-keys
+(jsp/leader-keys
   :infix "h"
   "d" '(:ignore t :wk "describe")
   "dv" '(describe-variable :wk)
@@ -820,7 +819,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; TOGGLES
-(jep/leader-keys
+(jsp/leader-keys
   :infix "t"
   "t" '(counsel-load-theme :which-key)
   "s" '(hydra-text-scale/body :wk)
@@ -832,7 +831,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; SEARCH
-(jep/leader-keys
+(jsp/leader-keys
   :infix "s"
   "s" '(swiper :wk)
   )
@@ -843,7 +842,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+begin_src emacs-lisp
 ;; WINDOW
-(jep/leader-keys
+(jsp/leader-keys
   :infix "w"
   "d" '(:wk)
   )
@@ -854,7 +853,7 @@ I use multiple prefixes to branch into different key bindings chords
 This may not be necessary with ~projectile-command-map~ bound to SPC-p
 #+begin_src emacs-lisp
 ;; PROJECT
-;; (jep/leader-keys
+;; (jsp/leader-keys
 ;;   :infix "p"
 ;;   "f"  'counsel-projectile-find-file
 ;;   "s"  'counsel-projectile-switch-project
@@ -870,7 +869,7 @@ This may not be necessary with ~projectile-command-map~ bound to SPC-p
 
 #+begin_src emacs-lisp
 ;; QUIT
-(jep/leader-keys
+(jsp/leader-keys
   :infix "q"
   "q" '(save-buffers-kill-terminal :wk)
   ;; "r" '(spacemacs/restart-emacs-resume-layouts :wk)
@@ -1118,24 +1117,22 @@ That way is by evalling (howm-menu-mode) itself during (howm-menu-refresh) which
 I need to change howm-set-keymap function to use general.el to set
 howm keys with my prefix key SPC a h
 
+*** Functions 
+#+begin_src emacs-lisp
+(defun jsp/howm-general-keymap ()
+  (mapc (lambda (entry)
+          (let* ((k (car entry))
+                 (f (cadr entry))
+		       (pk (concat "h" k)))
+	    ;; here to add general definer jsp/leader-keys
+            (jsp/leader-keys :infix "a" (key-description pk) `(,f :wk))))
+        howm-default-key-table))
+#+end_src
 *** Install
 #+begin_src emacs-lisp
 
 (use-package howm
-  :defer 1
-  ;; :commands (howm-menu)
-  ;; TODO howm-set-keymap general-definer
-  ;; :init
-  ;; (gsetq howm-prefix " ah")
-  ;; :hook
-  ;; (howm-menu . evil-emacs-state)
-  :config
-  ;; (turn-off-evil-mode)
-  ;; (evil-make-overriding-map action-lock-mode-map)
-  (evil-set-initial-state 'howm-view-summary-mode 'emacs)
-  (evil-set-initial-state 'howm-view-contents-mode 'emacs)
-  ;; (add-to-list 'evil-collection-mode-list 'howm-view-summary-mode)
-  (evil-make-overriding-map howm-view-summary-mode-map)
+  :demand
   :general
   (:keymaps 'howm-view-summary-mode-map
    "<backtab>" 'howm-view-summary-previous-section
@@ -1146,6 +1143,13 @@ howm keys with my prefix key SPC a h
    "C-h"       nil
    )
    ;; I might want to add one for 'howm-view-summary-mode-map
+  :config
+  (gsetq howm-file-name-format "%Y/%m/%Y-%m-%d-%H%M%S.org")
+  (evil-set-initial-state 'howm-view-summary-mode 'emacs)
+  (evil-set-initial-state 'howm-view-contents-mode 'emacs)
+  (evil-make-overriding-map howm-view-summary-mode-map)
+  ;; key binds
+  (jsp/howm-general-keymap)
   )
 
 #+end_src
