@@ -726,9 +726,10 @@ I use multiple prefixes to branch into different key bindings chords
   "h" '(:ignore t :wk "help")
   "b" '(:ignore t :wk "buffers")
   ";" '(:ignore t :wk "comment")
-  "p" '(projectile-command-map :wk "projectile")
+  ;; "p" '(projectile-command-map :wk "projectile")
+  "s" '(:ignore t :wk "search")
   "g" '(:ignore t :which-key "git")
-  "l" '(lsp-command-keymap :wk "lsp (low prio)")
+  ;; "l" '(lsp-command-keymap :wk "lsp (low prio)")
   "q" '(:ignore t :wk "quit")
 
   )
@@ -1161,17 +1162,19 @@ Language server protocol to add language specific syntax and other IDE like feat
 #+begin_src emacs-lisp
 
 (use-package lsp-mode
-  :init
-  (gsetq lsp-keymap-prefix "SPC l")
+  :commands (lsp lsp-deferred)
+  ;; :init
+  ;; (gsetq lsp-keymap-prefix "SPC l")
   :ghook
   ;; modes that use lsp or lsp-deferred in my case
   ('(c++-mode-hook c-mode-hook) #'lsp-deferred)
 
   :gfhook
   #'lsp-enable-which-key-integration
-  :commands (lsp lsp-deferred)
-  )
-
+  :general
+  ;; had to use '(:keymap lsp-command-map to get autload for keymap
+  (jsp/leader-keys "l" '(:keymap lsp-command-map :wk "lsp (low prio)"))
+)
 #+end_src
 
 *** lsp-pyright for python
@@ -1499,10 +1502,11 @@ A package that allows for easy actionables within organized project workspaces
   :diminish projectile-mode
   :config (projectile-mode)
   :custom (projectile-completion-system 'ivy)
-  ;; :bind-keymap
-  ;; ("C-c p" . projectile-command-map)
   :general
-  ("C-c p" 'projectile-command-map)
+  ;; ("C-c p" 'projectile-command-map)
+  ;; had to use '(:keymap projectile-command-map to get autload for keymap
+  (jsp/leader-keys 
+    "p" '(:keymap projectile-command-map :wk "projectile"))
   :init
   (when (file-directory-p "~/projects/coding")
     (general-setq projectile-project-search-path '("~/projects/coding")))
