@@ -122,6 +122,11 @@ example below
      (gsetq mac-option-modifier 'meta)
      (gsetq mac-right-command-modifier 'meta)
 )
+
+(when (string-equal user-login-name "eparjus")	;
+  (defconst WORKENV t)
+  )
+
 #+end_src
 
 ** Functions
@@ -1308,10 +1313,15 @@ You know what Org mode is
 
   ;; efs ep6 //
   ;; set which files should be used to populate agenda with tasks
-  (general-setq org-agenda-files
-	'("~/orgfiles/tasks.org"
-	  "~/orgfiles/bdays.org")
-	)
+  (if WORKENV 
+      (general-setq org-agenda-files
+		    '("~/OneDrive - Ericsson/orgfiles/tasks.org"
+		      "~/OneDrive - Ericsson/orgfiles/bdays.org"))
+    (general-setq org-agenda-files
+		  '("~/orgfiles/tasks.org"
+		    "~/orgfiles/bdays.org")
+		  )
+    )
 
   (general-setq org-agenda-start-with-log-mode t)
   (general-setq org-log-done 'time)
