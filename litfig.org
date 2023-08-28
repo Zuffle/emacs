@@ -115,6 +115,13 @@ example below
 	       (y-or-n-p "Tangle?")
 	       (org-babel-tangle)))
 	 nil t)))
+
+(when (eq system-type 'darwin)
+     (message "macos")
+     (gsetq mac-command-modifier 'control)
+     (gsetq mac-option-modifier 'meta)
+     (gsetq mac-right-command-modifier 'meta)
+)
 #+end_src
 
 ** Functions
