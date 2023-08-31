@@ -123,9 +123,7 @@ example below
      (gsetq mac-right-command-modifier 'meta)
 )
 
-(when (string-equal user-login-name "eparjus")	;
-  (defconst WORKENV t)
-  )
+(defconst WORKENV (string-equal user-login-name "eparjus"))
 
 #+end_src
 
