@@ -734,7 +734,7 @@ I use multiple prefixes to branch into different key bindings chords
   "f" '(:ignore t :wk "files")
   "t" '(:ignore t :wk "toggles")
   "a" '(:ignore t :wk "applications")
-  "w" '(:ignore t :wk "window")
+  "w" '(evil-window-map :wk "window")
   "h" '(:ignore t :wk "help")
   "b" '(:ignore t :wk "buffers")
   ";" '(:ignore t :wk "comment")
@@ -751,6 +751,8 @@ I use multiple prefixes to branch into different key bindings chords
 #+begin_src emacs-lisp
 (jsp/leader-keys
   :infix "a"
+  "h" '(:ignore t :wk "howm")
+  
 )
 #+end_src
 
@@ -851,16 +853,7 @@ I use multiple prefixes to branch into different key bindings chords
 
 #+end_src
 
-*** Windows
 
-#+begin_src emacs-lisp
-;; WINDOW
-(jsp/leader-keys
-  :infix "w"
-  "d" '(:wk)
-  )
-
-#+end_src
 
 *** Project
 This may not be necessary with ~projectile-command-map~ bound to SPC-p
@@ -981,7 +974,7 @@ Not sure what this is RN
   )
 #+end_src
 
-** Evil
+* Evil
 Extensible vim emulation layer! 
 *** Hooks
 It seems like we need this add-to-list function for evil-emacs-state-modes to be in a hook otherwise it might not fire correctly
@@ -1020,6 +1013,9 @@ It seems like we need this add-to-list function for evil-emacs-state-modes to be
   :hook
   ;; (evil-mode . jsp/emacs-state-hook)
   (howm-menu . evil-initialize)
+  :general
+  (evil-window-map
+   "C-h" nil)
 
   :config
   (evil-mode  1)
