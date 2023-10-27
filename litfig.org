@@ -117,14 +117,22 @@ example below
 	 nil t)))
 
 (when (eq system-type 'darwin)
-     (message "macos")
-     (gsetq mac-command-modifier 'control)
-     (gsetq mac-option-modifier 'meta)
-     (gsetq mac-right-command-modifier 'meta)
-)
+  (message "macos")
+  (gsetq mac-command-modifier 'control)
+  (gsetq mac-option-modifier 'meta)
+  (gsetq mac-right-command-modifier 'meta)
+  )
 
 (defconst WORKENV (string-equal user-login-name "eparjus"))
 
+; Verilog indenting changes
+(let ((ind 2))
+  (gsetq verilog-indent-level ind
+	 verilog-indent-level-directive ind
+	 verilog-indent-level-module ind
+	 verilog-indent-level-behavioral ind
+	 verilog-indent-level-declaration ind
+	 ))
 #+end_src
 
 ** Functions
@@ -287,6 +295,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 (menu-bar-mode -1)			; disable menu bar
 
 (general-setq display-line-numbers-type 'relative)
+(general-setq display-line-numbers-widen t)
 (global-display-line-numbers-mode t)
 (general-setq visible-bell t)			; change audio bells to visual
 
