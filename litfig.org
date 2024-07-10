@@ -118,9 +118,9 @@ example below
 
 (when (eq system-type 'darwin)
   (message "macos")
-  (gsetq mac-command-modifier 'control)
-  (gsetq mac-option-modifier 'meta)
-  (gsetq mac-right-command-modifier 'meta)
+  ;; (gsetq mac-command-modifier 'control)
+  ;; (gsetq mac-option-modifier 'meta)
+  ;; (gsetq mac-right-command-modifier 'meta)
   )
 
 (defconst WORKENV (string-equal user-login-name "eparjus"))
@@ -282,6 +282,15 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
         (funcall dotspacemacs-scratch-mode)
         (run-hooks 'spacemacs-scratch-mode-hook)))))
 
+#+end_src
+
+** Server
+#+begin_src emacs-lisp
+(when WORKENV 
+  (server-start)
+  ;; (gsetq server-use-tcp t)
+  (gsetq server-port 50782)
+  (gsetq server-auth-key "q9xj@<_i5t-kw-o;^,D:!]9]\,{aKx3F\"WDH.e8K,k$2Du@(igwzj'3dv1dN7c$S"))
 #+end_src
 
 * UI
@@ -1530,7 +1539,7 @@ A package that allows for easy actionables within organized project workspaces
   :init
   (when (file-directory-p "~/projects/coding")
     (general-setq projectile-project-search-path '("~/projects/coding")))
-  (general-setq projectile-switch-project-action #'dw/projectile-dired)
+  ;; (general-setq projectile-switch-project-action #'dw/projectile-dired)
   )
 
 #+end_src
