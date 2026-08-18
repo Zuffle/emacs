@@ -133,6 +133,10 @@ example below
 	 verilog-indent-level-behavioral ind
 	 verilog-indent-level-declaration ind
 	 ))
+
+(gsetq remote-file-name-inhibit-cache nil)
+(gsetq vc-ignore-dir-regexp (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp))
+(gsetq tramp-verbose 1)
 #+end_src
 
 ** Functions
